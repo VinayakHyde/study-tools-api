@@ -15,18 +15,20 @@ class Settings(BaseSettings):
     ANKI_CONNECT_URL: str = "http://localhost:8765"
 
     # Notion integration token
-    NOTION_API_TOKEN: str = ""
+    NOTION_TOKEN: str = ""
 
     # Database connection URL (SQLite)
-    DB_URL: str = "sqlite:///./mapping.db"
+    DATABASE_URL: str = "sqlite:///./mapping.db"
 
     # Ngrok configuration
     NGROK_AUTHTOKEN: Optional[str] = None
     NGROK_DOMAIN: Optional[str] = None
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "extra": "allow"  # Allow extra fields in environment variables
+    }
 
 # Create global settings instance
 settings = Settings() 

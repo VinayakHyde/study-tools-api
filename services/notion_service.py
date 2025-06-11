@@ -476,6 +476,12 @@ class SimplifiedBlockText(BaseModel):
     equation: Optional[str] = Field(None, description="LaTeX expression for equation blocks")
     inline_equations: Optional[List[Dict[str, str]]] = Field(None, description="Inline equations in paragraph blocks")
 
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        json_schema_extra={"properties": {}},
+        populate_by_name=True
+    )
+
 class SimplifiedBlocksResponse(BaseModel):
     object: Literal["list"] = Field("list", description="Always 'list'")
     title: str = Field("", description="The title of the page")
@@ -769,6 +775,7 @@ def convert_text_to_rich_text(request: 'TextBlockRequest') -> List[Dict[str, Any
 @router.get(
     "/blocks/{page_id}/recursive",
     response_model=SimplifiedBlocksResponse,
+    description="Retrieve all blocks from a Notion page recursively, including nested blocks. Returns a simplified representation of the blocks with their text content and structure."
 )
 async def get_page_blocks(page_id: str = Path(..., description="Notion page ID")):
     """

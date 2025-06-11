@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 import requests
 import os
 from dotenv import load_dotenv
+from typing import List, Dict, Any
 
 # Load environment variables
 load_dotenv()
@@ -65,6 +66,21 @@ class SearchCardsIn(BaseModel):
     match_mode: str = Field("exact", description="'exact' or 'fuzzy'")
     limit: int = Field(20, description="Max number of results")
 
+class CreateDeckResponse(BaseModel):
+    deck: str = Field(..., description="Name of the created deck")
+
+class CardResponse(BaseModel):
+    card_id: int = Field(..., description="ID of the created card")
+
+class NoteResponse(BaseModel):
+    note_id: int = Field(..., description="ID of the created note")
+
+class TagResponse(BaseModel):
+    notes: List[int] = Field(..., description="List of note IDs that were tagged")
+
+class SearchResponse(BaseModel):
+    matches: List[Dict[str, Any]] = Field(..., description="List of matching cards")
+
 # ─── Utility ───────────────────────────────────────────────────────────────────
 
 def invoke(action: str, params: dict | None = None):
@@ -105,17 +121,16 @@ async def list_decks():
     decks = invoke("deckNamesAndIds")
     return {"decks": decks}
 
-@router.post("/decks")
+@router.post("/decks", response_model=CreateDeckResponse)
 async def create_deck(req: CreateDeckIn):
     """Create a new deck, optionally nested under a parent."""
     full_name = f"{req.parent}::{req.name}" if req.parent else req.name
     invoke("createDeck", {"deck": full_name})
     return {"deck": full_name}
 
-@router.post("/cards/basic")
+@router.post("/cards/basic", response_model=CardResponse)
 async def add_basic_card(card: BasicCardIn):
     """Create a Basic front/back card."""
-    # Resolve deck identifier (name or numeric ID) to actual deck name
     deck_name = _resolve_deck_name(card.deck_id)
     note = {
         "deckName": deck_name,
@@ -129,10 +144,9 @@ async def add_basic_card(card: BasicCardIn):
     card_id = invoke("addNote", {"note": note})
     return {"card_id": card_id}
 
-@router.post("/cards/cloze")
+@router.post("/cards/cloze", response_model=NoteResponse)
 async def add_cloze_card(card: ClozeCardIn):
     """Create a Cloze-deletion card."""
-    # Resolve deck identifier (name or numeric ID) to actual deck name
     deck_name = _resolve_deck_name(card.deck_id)
     note = {
         "deckName": deck_name,
@@ -178,10 +192,9 @@ async def update_card(
         invoke("updateNote", {"note": {"id": note_id, "tags": upd.tags}})
     return {"note_id": note_id}
 
-@router.post("/cards/tag")
+@router.post("/cards/tag", response_model=TagResponse)
 async def tag_cards(req: TagCardsIn):
     """Bulk add/remove tags on cards."""
-    # Map cards -> notes
     note_ids = invoke("cardsToNotes", {"cards": req.card_ids})
     if req.tags_to_add:
         invoke("addTags", {"notes": note_ids, "tags": " ".join(req.tags_to_add)})
@@ -209,17 +222,16 @@ async def get_due_cards(deck_id: str = Query(...), limit: int = Query(50)):
     cards = invoke("cardsInfo", {"cards": card_ids}) if card_ids else []
     return {"due_cards": cards}
 
-@router.post("/cards/search")
+@router.post("/cards/search", response_model=SearchResponse)
 async def search_cards(req: SearchCardsIn):
-    # exactly the same body as before, but read from `req`
     deck_name = _resolve_deck_name(req.deck_id)
-    text      = req.query_text.strip().strip('"').strip()
+    text = req.query_text.strip().strip('"').strip()
     if not text:
         q = f'deck:"{deck_name}"'
     else:
-        q = ( text if req.match_mode=="exact" else f"*{text}*" )
+        q = (text if req.match_mode=="exact" else f"*{text}*")
         q = f'deck:"{deck_name}" {q}'
-    ids   = invoke("findCards", {"query": q}) or []
+    ids = invoke("findCards", {"query": q}) or []
     cards = invoke("cardsInfo", {"cards": ids[:req.limit]}) if ids else []
     return {"matches": cards}
 
