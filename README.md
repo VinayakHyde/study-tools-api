@@ -118,15 +118,16 @@ To run the application using Docker:
 
 1. Create a `.env` file in the root directory with the following variables:
    ```
-   # Notion API Token (required)
-   NOTION_API_TOKEN=your_notion_api_token_here
+   # Required
+   NOTION_API_TOKEN=your_notion_integration_token
 
-   # Ngrok Configuration (optional)
-   NGROK_AUTHTOKEN=your_ngrok_auth_token_here
-   NGROK_DOMAIN=your_custom_domain_here
-
-   # Database Configuration
+   # Optional but recommended
+   ANKI_CONNECT_URL=http://host.docker.internal:8765
    DB_URL=sqlite:///./mapping.db
+
+   # Optional (for external access)
+   NGROK_AUTHTOKEN=your_ngrok_authtoken
+   NGROK_DOMAIN=your_custom_domain_here
    ```
 
 2. Build and start the containers:
