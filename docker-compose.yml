@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ANKI_CONNECT_URL=http://host.docker.internal:8765
+      - ANKI_SERVICE_PORT=8001
+      - NOTION_SERVICE_PORT=8002
+      - GLUE_SERVICE_PORT=8003
+      - API_PORT=8000
+      - NOTION_API_TOKEN=${NOTION_API_TOKEN}
+      - DB_URL=sqlite:///./mapping.db
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - NGROK_DOMAIN=${NGROK_DOMAIN}
+    volumes:
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway" 
