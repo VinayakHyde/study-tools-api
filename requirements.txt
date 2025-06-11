@@ -3,7 +3,7 @@ uvicorn==0.27.1
 pydantic==2.6.1
 python-dotenv==1.0.1
 requests==2.31.0
-pyngrok==7.0.6
+pyngrok==7.2.11
 sqlalchemy==2.0.27
 aiohttp==3.9.3
 httpx==0.26.0

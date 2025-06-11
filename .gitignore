@@ -38,6 +38,7 @@ mapping.db
 *.db
 *.sqlite3
 *.log
+.well-known/
 
 # Docker
 .docker/

@@ -42,9 +42,6 @@ pip install -r requirements.txt
 ```
 
 4. Create environment file:
-```bash
-cp .env.example .env
-```
 
 5. Edit `.env` file with your configuration:
 - Add your Notion API token
@@ -136,5 +133,7 @@ To run the application using Docker:
    ```
 
 The API will be available at `http://localhost:8000`.
+
+The URLs will be available at `urls.json`.
 
 Note: Make sure you have Docker and Docker Compose installed on your system 
