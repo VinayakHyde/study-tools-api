@@ -1,7 +1,5 @@
 # services/notion_service.py
 
-import os
-from dotenv import load_dotenv
 import json
 import logging
 import re
@@ -18,6 +16,7 @@ import httpx
 from pydantic import BaseModel, Field, model_validator, RootModel, ConfigDict
 from typing import Any, Dict, List, Optional, Union, Literal
 from functools import wraps
+from common.config import settings
 
 # ─── Logging Setup ────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -27,9 +26,8 @@ logging.basicConfig(
 logger = logging.getLogger("notion_service")
 
 # ─── Configuration ────────────────────────────────────────────────────────────
-load_dotenv()
-NOTION_TOKEN = os.getenv("NOTION_TOKEN")
-NOTION_VERSION = os.getenv("NOTION_VERSION", "2022-06-28")
+NOTION_TOKEN = settings.NOTION_TOKEN
+NOTION_VERSION = "2022-06-28"
 
 if not NOTION_TOKEN:
     logger.critical("Missing NOTION_TOKEN in environment")

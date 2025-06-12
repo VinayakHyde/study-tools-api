@@ -1,15 +1,13 @@
 from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
-import os
 import sqlite3
 import requests
-from dotenv import load_dotenv
+from common.config import settings
 
-# Load environment
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./mapping.db")
+# Use centralized configuration
+DATABASE_URL = settings.DATABASE_URL
 # URL for local AnkiConnect JSON-RPC (used for fetching card/note context)
-ANKI_CONNECT_URL = os.getenv("ANKI_CONNECT_URL", "http://localhost:8765")
+ANKI_CONNECT_URL = settings.ANKI_CONNECT_URL
 # Extract sqlite path
 if DATABASE_URL.startswith("sqlite:///"):
     DB_PATH = DATABASE_URL.replace("sqlite:///", "")

@@ -1,13 +1,11 @@
 from fastapi import APIRouter, FastAPI, HTTPException, Query, Path, Body
 from pydantic import BaseModel, Field
 import requests
-import os
-from dotenv import load_dotenv
 from typing import List, Dict, Any
+from common.config import settings
 
-# Load environment variables
-load_dotenv()
-ANKI_CONNECT_URL = os.getenv("ANKI_CONNECT_URL", "http://localhost:8765")
+# Use centralized configuration
+ANKI_CONNECT_URL = settings.ANKI_CONNECT_URL
 
 router = APIRouter()
 
@@ -119,7 +117,9 @@ def _resolve_deck_name(deck_id: str) -> str:
 async def list_decks():
     """List all deck names and IDs."""
     decks = invoke("deckNamesAndIds")
-    return {"decks": decks}
+    # Convert to list of objects with explicit name and id fields
+    deck_list = [{"name": name, "id": deck_id} for name, deck_id in decks.items()]
+    return {"decks": deck_list}
 
 @router.post("/decks", response_model=CreateDeckResponse)
 async def create_deck(req: CreateDeckIn):
