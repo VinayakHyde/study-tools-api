@@ -21,7 +21,7 @@ A FastAPI-based service that integrates Anki and Notion study tools, with SQLite
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/VinayakHyde/study-tools-api.git
 cd study-tools-api
 ```
 
